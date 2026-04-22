@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SignLens — Luxury Street Sign Translator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#C9A84C;--gold2:#E8C97A;--gold3:#F5E6C0;--gold-dim:rgba(201,168,76,0.15);--gold-glow:rgba(201,168,76,0.08);
+  --obsidian:#080A0F;--deep:#0D1018;--surface:#111520;--surface2:#161B26;--surface3:#1C2333;
+  --border:rgba(201,168,76,0.18);--border2:rgba(201,168,76,0.08);
+  --text:#F0EDE8;--text2:#B8B0A4;--text3:#6B6560;
+  --ruby:#8B1A3A;--ruby2:#C0395A;--emerald:#1A5C3A;--sapphire:#1A3A6B;
+  --r:2px;--rs:1px;--tr:0.3s ease;
+  --ff-display:'Cormorant Garamond',serif;
+  --ff-head:'Playfair Display',serif;
+  --ff-body:'Montserrat',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff-body);background:var(--obsidian);color:var(--text);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;cursor:default}
+
+/* ── Luxury background ── */
+.bg-texture{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 10%,rgba(201,168,76,0.04) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 90%,rgba(139,26,58,0.04) 0%,transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A84C' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.gold-line{position:fixed;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);z-index:100;opacity:.6}
+
+/* ── Header ── */
+header{position:relative;z-index:50;padding:32px 60px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border2);background:rgba(8,10,15,0.95);backdrop-filter:blur(20px)}
+.logo-wrap{display:flex;align-items:center;gap:20px}
+.logo-emblem{width:48px;height:48px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative}
+.logo-emblem::before{content:'';position:absolute;inset:3px;border-radius:50%;border:1px solid rgba(201,168,76,0.3)}
+.logo-hex{font-size:1.2rem;color:var(--gold)}
+.logo-text{display:flex;flex-direction:column;gap:2px}
+.logo-main{font-family:var(--ff-head);font-size:1.6rem;font-weight:700;letter-spacing:.08em;color:var(--text);line-height:1}
+.logo-main em{font-style:italic;color:var(--gold)}
+.logo-sub{font-size:.55rem;letter-spacing:.3em;color:var(--text3);text-transform:uppercase;font-weight:500}
+.header-right{display:flex;align-items:center;gap:24px}
+.nav-pill{display:flex;align-items:center;gap:6px;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);border:1px solid var(--border);border-radius:20px;padding:6px 16px;font-weight:500}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse-gold 2s ease-in-out infinite}
+@keyframes pulse-gold{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* ── Hero ── */
+.hero{position:relative;z-index:5;text-align:center;padding:72px 40px 48px}
+.hero-eyebrow{font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:12px}
+.hero-line{width:40px;height:1px;background:var(--gold);opacity:.5}
+.hero-title{font-family:var(--ff-display);font-size:clamp(2.8rem,5vw,4.5rem);font-weight:300;letter-spacing:.05em;line-height:1.1;color:var(--text);margin-bottom:16px}
+.hero-title em{font-style:italic;color:var(--gold)}
+.hero-title strong{font-weight:600}
+.hero-desc{font-size:.8rem;letter-spacing:.08em;color:var(--text2);max-width:480px;margin:0 auto;line-height:2;font-weight:300}
+
+/* ── Main grid ── */
+main{position:relative;z-index:5;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin:0 60px 60px;border:1px solid var(--border);border-radius:var(--r)}
+.panel{background:var(--surface);padding:40px;display:flex;flex-direction:column;gap:28px}
+.panel:first-child{border-radius:var(--r) 0 0 var(--r)}
+.panel:last-child{border-radius:0 var(--r) var(--r) 0}
+
+/* Panel header */
+.panel-hdr{display:flex;align-items:center;gap:16px;padding-bottom:24px;border-bottom:1px solid var(--border2)}
+.panel-num{font-family:var(--ff-display);font-size:2rem;font-weight:300;color:var(--gold);opacity:.4;line-height:1;width:36px;flex-shrink:0}
+.panel-info{flex:1}
+.panel-title{font-family:var(--ff-head);font-size:1rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--text)}
+.panel-subtitle{font-size:.6rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-top:3px;font-weight:400}
+.panel-ornament{width:24px;height:24px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.panel-ornament::after{content:'✦';font-size:.5rem;color:var(--gold);opacity:.6}
+
+/* ── Viewport ── */
+.vp-frame{position:relative;width:100%;aspect-ratio:4/3;border:1px solid var(--border);background:var(--deep);overflow:hidden}
+.vp-frame::before,.vp-frame::after{content:'';position:absolute;width:20px;height:20px;border-color:var(--gold);border-style:solid;opacity:.6;z-index:5}
+.vp-frame::before{top:10px;left:10px;border-width:1px 0 0 1px}
+.vp-frame::after{bottom:10px;right:10px;border-width:0 1px 1px 0}
+.vp-corners span{position:absolute;width:20px;height:20px;border-color:var(--gold);border-style:solid;opacity:.6;z-index:5}
+.vp-corners span:nth-child(1){top:10px;right:10px;border-width:1px 1px 0 0}
+.vp-corners span:nth-child(2){bottom:10px;left:10px;border-width:0 0 1px 1px}
+.vp-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:1}
+.vp-ph-icon{width:56px;height:56px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:.5}
+.vp-ph-icon svg{width:22px;height:22px;stroke:var(--gold)}
+.vp-ph-text{font-family:var(--ff-display);font-size:1rem;font-weight:300;color:var(--text3);text-align:center;letter-spacing:.05em;max-width:200px;line-height:1.6}
+.vp-ph-sub{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);opacity:.5}
+#vpVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;z-index:2}
+#vpImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none;z-index:2}
+#bboxC{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none;z-index:3}
+.rec-dot{position:absolute;top:14px;right:14px;display:none;align-items:center;gap:6px;z-index:6;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ruby2)}
+.rec-dot-circle{width:7px;height:7px;border-radius:50%;background:var(--ruby2);animation:blink 1s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ── Controls ── */
+.controls-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;font-family:var(--ff-body);font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:var(--tr);white-space:nowrap;border-radius:var(--rs)}
+.btn svg{width:13px;height:13px;flex-shrink:0}
+.btn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
+.btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-glow)}
+.btn-cam-on{border-color:var(--ruby2);color:var(--ruby2);background:rgba(139,26,58,.08)}
+.btn-cam-on:hover{border-color:var(--ruby2);color:var(--ruby2);background:rgba(139,26,58,.15)}
+.btn-capture{border-color:var(--gold);color:var(--gold);background:var(--gold-glow)}
+.btn-capture:hover{background:rgba(201,168,76,.2)}
+.btn-primary{background:var(--gold);color:var(--obsidian);border-color:var(--gold);width:100%;justify-content:center;padding:14px;font-size:.7rem;position:relative;overflow:hidden}
+.btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold2),var(--gold));opacity:0;transition:opacity .3s}
+.btn-primary:hover:not(:disabled)::before{opacity:1}
+.btn-primary:hover:not(:disabled){color:var(--obsidian)}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed}
+.btn-primary.loading .lbl{opacity:0}
+.btn-primary.loading .spin{display:block}
+.lbl{display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+.spin{display:none;position:absolute;inset:0;margin:auto;width:16px;height:16px;border:2px solid rgba(8,10,15,.2);border-top-color:var(--obsidian);border-radius:50%;animation:rot .7s linear infinite;z-index:1}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* ── Language selector ── */
+.lang-section{display:flex;flex-direction:column;gap:8px}
+.lang-label{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);font-weight:500}
+.lang-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lang-chip{padding:8px 4px;text-align:center;font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text3);transition:var(--tr);border-radius:var(--rs);line-height:1.4}
+.lang-chip:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-glow)}
+.lang-chip.active{border-color:var(--gold);color:var(--obsidian);background:var(--gold);font-weight:700}
+.lang-chip-script{display:block;font-size:.65rem;margin-top:2px;font-family:var(--ff-display);font-style:italic;font-weight:300;letter-spacing:.02em}
+
+/* ── Error ── */
+.err{background:rgba(139,26,58,.12);border:1px solid rgba(192,57,90,.25);color:#E87090;padding:12px 16px;font-size:.7rem;line-height:1.7;letter-spacing:.03em;border-radius:var(--rs)}
+
+/* ── Results ── */
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;min-height:300px;padding:40px}
+.empty-emblem{width:64px;height:64px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;opacity:.4}
+.empty-emblem::before{content:'';position:absolute;inset:6px;border:1px solid var(--border);border-radius:50%}
+.empty-emblem-icon{font-family:var(--ff-display);font-size:1.5rem;color:var(--gold);font-weight:300}
+.empty-text{font-family:var(--ff-display);font-size:1rem;font-weight:300;color:var(--text3);text-align:center;letter-spacing:.05em;line-height:1.7;max-width:220px}
+
+/* Steps */
+.steps{display:flex;gap:0}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border:1px solid var(--border2);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);font-weight:600;transition:var(--tr);position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);width:1px;height:60%;background:var(--border2)}
+.step-icon{font-size:1rem;opacity:.3}
+.step.active{background:var(--gold-glow);border-color:var(--gold);color:var(--gold)}
+.step.active .step-icon{opacity:1}
+.step.done{background:rgba(26,92,58,.1);border-color:rgba(26,92,58,.4);color:#5CB882}
+.step.done .step-icon{opacity:1}
+
+/* Confidence */
+.conf-wrap{display:flex;flex-direction:column;gap:6px}
+.conf-row{display:flex;align-items:center;justify-content:space-between}
+.conf-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);font-weight:500}
+.conf-val{font-family:var(--ff-display);font-size:1.4rem;font-weight:300;color:var(--gold);line-height:1}
+.conf-track{height:2px;background:var(--surface3);overflow:hidden;border-radius:1px}
+.conf-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0;transition:width 1s cubic-bezier(.25,.46,.45,.94);border-radius:1px}
+
+/* Result cards */
+.result-card{border:1px solid var(--border2);padding:20px 22px;position:relative;background:var(--surface2)}
+.result-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.2}
+.result-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.result-tag{font-size:.55rem;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);font-weight:600}
+.result-tag-tr{color:var(--gold)}
+.lang-used{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.3);padding:2px 8px;border-radius:var(--rs);margin-right:auto;margin-left:8px}
+.cpbtn{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);border:1px solid var(--border2);background:transparent;padding:4px 10px;cursor:pointer;font-family:var(--ff-body);font-weight:600;transition:var(--tr);border-radius:var(--rs)}
+.cpbtn:hover{color:var(--gold);border-color:var(--gold)}
+.result-text{font-family:var(--ff-display);font-size:1.4rem;font-weight:300;color:var(--text);line-height:1.5;letter-spacing:.02em;word-break:break-word}
+.result-text-tr{color:var(--gold2);font-size:1.5rem}
+.result-divider{height:1px;background:linear-gradient(90deg,var(--border2),transparent)}
+
+/* ── Footer ── */
+footer{position:relative;z-index:5;padding:20px 60px;border-top:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between}
+.footer-logo{font-family:var(--ff-display);font-size:.9rem;font-weight:300;color:var(--text3);letter-spacing:.15em;font-style:italic}
+.footer-tech{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);opacity:.5}
+
+@media(max-width:960px){
+  main{grid-template-columns:1fr;margin:0 20px 40px;gap:1px}
+  .panel:first-child{border-radius:var(--r) var(--r) 0 0}
+  .panel:last-child{border-radius:0 0 var(--r) var(--r)}
+  header{padding:20px 24px}footer{padding:16px 24px;flex-direction:column;gap:8px;text-align:center}
+  .hero{padding:40px 24px 32px}
+}
+@media(max-width:520px){
+  .lang-grid{grid-template-columns:repeat(3,1fr)}
+  .controls-row{flex-direction:column}
+  .btn{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+<div class="gold-line"></div>
+<div class="bg-texture"></div>
+
+<!-- Header -->
+<header>
+  <div class="logo-wrap">
+    <div class="logo-emblem"><span class="logo-hex">◆</span></div>
+    <div class="logo-text">
+      <div class="logo-main">Sign<em>Lens</em></div>
+      <div class="logo-sub">Luxury Translation System</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="nav-pill"><span class="nav-dot"></span>AI Vision Active</div>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-eyebrow"><span class="hero-line"></span>Street Sign Intelligence<span class="hero-line"></span></div>
+  <h1 class="hero-title">Decode Every Sign,<br><em>Anywhere</em> in the <strong>World</strong></h1>
+  <p class="hero-desc">Upload or capture a street sign image. Our AI vision extracts the text and translates it into your chosen language with exceptional accuracy.</p>
+</div>
+
+<!-- Main -->
+<main>
+  <!-- INPUT PANEL -->
+  <section class="panel" id="inputPanel">
+    <div class="panel-hdr">
+      <div class="panel-num">I</div>
+      <div class="panel-info">
+        <div class="panel-title">Capture &amp; Upload</div>
+        <div class="panel-subtitle">Image Acquisition</div>
+      </div>
+      <div class="panel-ornament"></div>
+    </div>
+
+    <!-- Viewport -->
+    <div class="vp-frame" id="vpFrame">
+      <div class="vp-corners"><span></span><span></span></div>
+      <div class="vp-ph" id="vpPh">
+        <div class="vp-ph-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <rect x="3" y="5" width="18" height="14" rx="1"/>
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M9 5V3h6v2"/>
+          </svg>
+        </div>
+        <div class="vp-ph-text">Place your sign image here</div>
+        <div class="vp-ph-sub">JPG · PNG · WEBP</div>
+      </div>
+      <video id="vpVideo" autoplay playsinline muted></video>
+      <img id="vpImg" alt="Sign Preview"/>
+      <canvas id="bboxC"></canvas>
+      <div class="rec-dot" id="recDot"><div class="rec-dot-circle"></div>Live</div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-row">
+      <label class="btn" for="fileIn" style="cursor:pointer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload Image
+      </label>
+      <input type="file" id="fileIn" accept="image/jpeg,image/jpg,image/png,image/webp" hidden/>
+
+      <button class="btn" id="camBtn" onclick="toggleCamera()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7 16 12 23 17V7z"/><rect x="1" y="5" width="15" height="14" rx="1"/></svg>
+        <span id="camTxt">Open Camera</span>
+      </button>
+
+      <button class="btn btn-capture" id="capBtn" style="display:none" onclick="captureFrame()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+        Capture
+      </button>
+    </div>
+
+    <!-- Language chips -->
+    <div class="lang-section">
+      <div class="lang-label">Select Target Language</div>
+      <div class="lang-grid" id="langGrid">
+        <button class="lang-chip active" data-lang="en" onclick="selectLang(this)">English<span class="lang-chip-script">Latin</span></button>
+        <button class="lang-chip" data-lang="kn" onclick="selectLang(this)">Kannada<span class="lang-chip-script">ಕನ್ನಡ</span></button>
+        <button class="lang-chip" data-lang="te" onclick="selectLang(this)">Telugu<span class="lang-chip-script">తెలుగు</span></button>
+        <button class="lang-chip" data-lang="ta" onclick="selectLang(this)">Tamil<span class="lang-chip-script">தமிழ்</span></button>
+        <button class="lang-chip" data-lang="mr" onclick="selectLang(this)">Marathi<span class="lang-chip-script">मराठी</span></button>
+        <button class="lang-chip" data-lang="ml" onclick="selectLang(this)">Malayalam<span class="lang-chip-script">മലയാളം</span></button>
+        <button class="lang-chip" data-lang="hi" onclick="selectLang(this)">Hindi<span class="lang-chip-script">हिन्दी</span></button>
+        <button class="lang-chip" data-lang="fr" onclick="selectLang(this)">French<span class="lang-chip-script">Français</span></button>
+        <button class="lang-chip" data-lang="es" onclick="selectLang(this)">Spanish<span class="lang-chip-script">Español</span></button>
+        <button class="lang-chip" data-lang="ar" onclick="selectLang(this)">Arabic<span class="lang-chip-script">عربي</span></button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="procBtn" disabled onclick="processImage()">
+      <span class="lbl">◆ &nbsp; Detect &amp; Translate</span>
+      <span class="spin"></span>
+    </button>
+
+    <div id="errBox" style="display:none" class="err"></div>
+  </section>
+
+  <!-- RESULTS PANEL -->
+  <section class="panel">
+    <div class="panel-hdr">
+      <div class="panel-num">II</div>
+      <div class="panel-info">
+        <div class="panel-title">Analysis Results</div>
+        <div class="panel-subtitle">Detection &amp; Translation</div>
+      </div>
+      <div class="panel-ornament"></div>
+    </div>
+
+    <!-- Progress steps -->
+    <div class="steps">
+      <div class="step" id="s1"><div class="step-icon">◎</div>Reading</div>
+      <div class="step" id="s2"><div class="step-icon">◈</div>Extracting</div>
+      <div class="step" id="s3"><div class="step-icon">◇</div>Translating</div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyEl">
+      <div class="empty-emblem"><div class="empty-emblem-icon">◆</div></div>
+      <div class="empty-text">Upload or capture a street sign to begin the translation process</div>
+    </div>
+
+    <!-- Results -->
+    <div id="resEl" style="display:none;flex-direction:column;gap:20px">
+      <!-- Confidence -->
+      <div class="conf-wrap">
+        <div class="conf-row">
+          <span class="conf-label">OCR Confidence</span>
+          <span class="conf-val" id="confVal">—</span>
+        </div>
+        <div class="conf-track"><div class="conf-fill" id="confFill"></div></div>
+      </div>
+
+      <div class="result-divider"></div>
+
+      <!-- Detected -->
+      <div class="result-card">
+        <div class="result-hdr">
+          <span class="result-tag">Detected Text</span>
+          <button class="cpbtn" onclick="doCopy('detOut',this)">Copy</button>
+        </div>
+        <div class="result-text" id="detOut"></div>
+      </div>
+
+      <!-- Translated -->
+      <div class="result-card">
+        <div class="result-hdr">
+          <span class="result-tag result-tag-tr">Translation</span>
+          <span class="lang-used" id="langUsed"></span>
+          <button class="cpbtn" onclick="doCopy('trOut',this)">Copy</button>
+        </div>
+        <div class="result-text result-text-tr" id="trOut"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-logo">SignLens</div>
+  <div class="footer-tech">Java Spring Boot · AI Vision · 10 Languages</div>
+</footer>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+var selectedLang = "en";
+var LANG_NAMES = {
+  en:"English",kn:"Kannada",te:"Telugu",ta:"Tamil",
+  mr:"Marathi",ml:"Malayalam",hi:"Hindi",
+  fr:"French",es:"Spanish",ar:"Arabic"
+};
+var currentBlob = null;
+var mediaStream = null;
+var cameraActive = false;
+
+// ── DOM ────────────────────────────────────────────────────────────────────
+var vpPh    = document.getElementById("vpPh");
+var vpVideo = document.getElementById("vpVideo");
+var vpImg   = document.getElementById("vpImg");
+var bboxC   = document.getElementById("bboxC");
+var recDot  = document.getElementById("recDot");
+var camBtn  = document.getElementById("camBtn");
+var camTxt  = document.getElementById("camTxt");
+var capBtn  = document.getElementById("capBtn");
+var procBtn = document.getElementById("procBtn");
+var errBox  = document.getElementById("errBox");
+var emptyEl = document.getElementById("emptyEl");
+var resEl   = document.getElementById("resEl");
+var confFill= document.getElementById("confFill");
+var confVal = document.getElementById("confVal");
+var detOut  = document.getElementById("detOut");
+var trOut   = document.getElementById("trOut");
+var langUsed= document.getElementById("langUsed");
+var s1=document.getElementById("s1"),s2=document.getElementById("s2"),s3=document.getElementById("s3");
+
+// ── Language chips ─────────────────────────────────────────────────────────
+function selectLang(el) {
+  document.querySelectorAll(".lang-chip").forEach(function(c){ c.classList.remove("active"); });
+  el.classList.add("active");
+  selectedLang = el.getAttribute("data-lang");
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function showErr(m){ errBox.textContent = "◆ " + m; errBox.style.display = "block"; }
+function clearErr(){ errBox.style.display = "none"; }
+function setLoad(on){
+  if(on){ procBtn.classList.add("loading"); procBtn.disabled = true; }
+  else  { procBtn.classList.remove("loading"); procBtn.disabled = !currentBlob; }
+}
+function setStep(el,st){ el.className = "step" + (st?" "+st:""); }
+function resetSteps(){ setStep(s1,""); setStep(s2,""); setStep(s3,""); }
+function showPreview(src){
+  vpPh.style.display="none"; vpVideo.style.display="none";
+  vpImg.src=src; vpImg.style.display="block"; bboxC.style.display="none";
+}
+function dataURItoBlob(uri){
+  var p=uri.split(","), m=p[0].match(/:(.*?);/)[1], b=atob(p[1]), a=new Uint8Array(b.length);
+  for(var i=0;i<b.length;i++) a[i]=b.charCodeAt(i);
+  return new Blob([a],{type:m});
+}
+function blobToBase64(blob){
+  return new Promise(function(res){
+    var r=new FileReader(); r.onload=function(e){res(e.target.result.split(",")[1]);}; r.readAsDataURL(blob);
+  });
+}
+function resetResults(){
+  resEl.style.display="none"; emptyEl.style.display="flex";
+  confFill.style.width="0%"; confVal.textContent="—";
+  detOut.textContent=""; trOut.textContent=""; langUsed.textContent="";
+  bboxC.style.display="none"; resetSteps();
+}
+function doCopy(elId, btn){
+  var t=(document.getElementById(elId)||{}).textContent||""; if(!t.trim()) return;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(t.trim()).then(function(){
+      var o=btn.textContent; btn.textContent="Copied"; setTimeout(function(){btn.textContent=o;},1800);
+    });
+  } else {
+    var ta=document.createElement("textarea"); ta.value=t.trim();
+    ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta);
+    ta.select(); document.execCommand("copy");
+    document.body.removeChild(ta);
+    var o=btn.textContent; btn.textContent="Copied"; setTimeout(function(){btn.textContent=o;},1800);
+  }
+}
+
+// ── File upload ────────────────────────────────────────────────────────────
+document.getElementById("fileIn").addEventListener("change", function(e){
+  var f=e.target.files[0]; if(!f) return;
+  clearErr(); resetResults();
+  if(!["image/jpeg","image/jpg","image/png","image/webp"].includes(f.type)){
+    showErr("Please use JPG, PNG or WEBP format."); e.target.value=""; return;
+  }
+  currentBlob=f;
+  var r=new FileReader(); r.onload=function(ev){showPreview(ev.target.result);}; r.readAsDataURL(f);
+  if(cameraActive) stopCamera();
+  procBtn.disabled=false; e.target.value="";
+});
+
+// ── Camera ─────────────────────────────────────────────────────────────────
+function toggleCamera(){ cameraActive ? stopCamera() : startCamera(); }
+
+function startCamera(){
+  clearErr();
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    showErr("Camera not supported in this browser. Please use Chrome or Firefox."); return;
+  }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},audio:false})
+  .then(function(stream){
+    mediaStream=stream; vpVideo.srcObject=stream;
+    vpVideo.style.display="block"; vpImg.style.display="none"; vpPh.style.display="none"; bboxC.style.display="none";
+    recDot.style.display="flex"; cameraActive=true;
+    camTxt.textContent="Close Camera"; camBtn.classList.add("btn-cam-on");
+    capBtn.style.display="inline-flex"; procBtn.disabled=true;
+    vpVideo.play().catch(function(){});
+  })
+  .catch(function(err){
+    if(err.name==="NotAllowedError"||err.name==="PermissionDeniedError"){
+      showErr("Camera permission denied. Please allow camera access in your browser and try again.");
+    } else if(err.name==="NotFoundError"){
+      showErr("No camera found on this device.");
+    } else if(err.name==="NotReadableError"){
+      showErr("Camera is in use by another application. Please close it and try again.");
+    } else if(err.name==="OverconstrainedError"){
+      navigator.mediaDevices.getUserMedia({video:true,audio:false}).then(function(stream){
+        mediaStream=stream; vpVideo.srcObject=stream;
+        vpVideo.style.display="block"; vpImg.style.display="none"; vpPh.style.display="none";
+        recDot.style.display="flex"; cameraActive=true;
+        camTxt.textContent="Close Camera"; camBtn.classList.add("btn-cam-on");
+        capBtn.style.display="inline-flex"; procBtn.disabled=true;
+        vpVideo.play().catch(function(){});
+      }).catch(function(e2){ showErr("Camera error: "+(e2.message||e2.name)); });
+    } else {
+      showErr("Camera error: "+(err.message||err.name)+". Try uploading an image instead.");
+    }
+  });
+}
+
+function stopCamera(){
+  if(mediaStream) mediaStream.getTracks().forEach(function(t){t.stop();});
+  mediaStream=null; vpVideo.srcObject=null; vpVideo.style.display="none";
+  recDot.style.display="none"; cameraActive=false;
+  camTxt.textContent="Open Camera"; camBtn.classList.remove("btn-cam-on");
+  capBtn.style.display="none";
+  if(!currentBlob) vpPh.style.display="flex";
+}
+
+function captureFrame(){
+  if(!mediaStream||!vpVideo.videoWidth){showErr("Camera not ready. Please wait and try again."); return;}
+  var c=document.createElement("canvas"); c.width=vpVideo.videoWidth; c.height=vpVideo.videoHeight;
+  c.getContext("2d").drawImage(vpVideo,0,0,c.width,c.height);
+  var uri=c.toDataURL("image/jpeg",.92);
+  currentBlob=dataURItoBlob(uri); showPreview(uri);
+  stopCamera(); procBtn.disabled=false; clearErr(); resetResults();
+}
+
+// ── Process via Java backend OR direct AI ──────────────────────────────────
+function processImage(){
+  if(!currentBlob) return;
+  clearErr(); resetResults(); setLoad(true);
+  emptyEl.style.display="none"; resetSteps(); setStep(s1,"active");
+
+  var langName = LANG_NAMES[selectedLang] || selectedLang;
+
+  // Try Java backend first (POST /api/process-image)
+  var fd = new FormData();
+  fd.append("file", currentBlob, "sign.jpg");
+  fd.append("language", selectedLang);
+
+  fetch("/api/process-image", { method:"POST", body:fd })
+  .then(function(resp){
+    if(!resp.ok){ return resp.json().then(function(e){ throw new Error(e.message||"Backend error "+resp.status); }); }
+    return resp.json();
+  })
+  .then(function(data){
+    setStep(s1,"done"); setStep(s2,"done"); setStep(s3,"active");
+    setTimeout(function(){
+      setStep(s3,"done");
+      renderResults(data.detected_text, data.translated_text, data.confidence, langName);
+    }, 300);
+  })
+  .catch(function(backendErr){
+    // Backend unavailable — fall back to direct AI call
+    console.warn("Backend unavailable, using direct AI:", backendErr.message);
+    setStep(s1,"done"); setStep(s2,"active");
+    blobToBase64(currentBlob).then(function(b64){
+      var mime = currentBlob.type || "image/jpeg";
+      var sys =
+        "You are a precise street sign OCR and translation engine.\n"+
+        "Extract ALL visible text from the street sign exactly as written.\n"+
+        "Translate it into "+langName+".\n"+
+        "Estimate confidence 0-100.\n"+
+        "Return ONLY this JSON:\n"+
+        "{\"detected\":\"<sign text>\",\"translated\":\"<"+langName+" translation>\",\"confidence\":<0-100>}\n"+
+        "No markdown. No extra text.";
+      return fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          model:"claude-sonnet-4-20250514",
+          max_tokens:1000, system:sys,
+          messages:[{role:"user",content:[
+            {type:"image",source:{type:"base64",media_type:mime,data:b64}},
+            {type:"text",text:"Extract and translate. JSON only."}
+          ]}]
+        })
+      });
+    })
+    .then(function(r){
+      if(!r.ok) return r.json().then(function(e){throw new Error(e.error&&e.error.message?e.error.message:"API error "+r.status);});
+      return r.json();
+    })
+    .then(function(data){
+      setStep(s2,"done"); setStep(s3,"active");
+      var raw=""; for(var i=0;i<(data.content||[]).length;i++){if(data.content[i].type==="text"){raw=data.content[i].text;break;}}
+      raw=raw.replace(/```json/g,"").replace(/```/g,"").trim();
+      var parsed; try{parsed=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);else throw new Error("Could not parse AI response.");}
+      if(!parsed.detected||!parsed.detected.trim()) throw new Error("No text detected. Try a clearer photo.");
+      setStep(s3,"done");
+      renderResults(parsed.detected, parsed.translated, parsed.confidence, langName);
+    })
+    .catch(function(e){
+      resetSteps(); emptyEl.style.display="flex";
+      showErr(e.message||"Processing failed. Please try again.");
+    })
+    .finally(function(){ setLoad(false); });
+    return; // prevent outer finally
+  });
+
+  // Note: outer finally only for backend path
+}
+
+function renderResults(detected, translated, confidence, langName){
+  var pct = Math.round(Math.min(100,Math.max(0,confidence||80)));
+  confFill.style.width = pct+"%";
+  confVal.textContent = pct+"%";
+  detOut.textContent = detected;
+  trOut.textContent = translated;
+  langUsed.textContent = langName;
+  resEl.style.display = "flex";
+  drawBox();
+  setLoad(false);
+}
+
+// ── Bounding box ───────────────────────────────────────────────────────────
+function drawBox(){
+  if(vpImg.style.display==="none") return;
+  bboxC.style.display="block";
+  var w=vpImg.clientWidth||vpImg.naturalWidth, h=vpImg.clientHeight||vpImg.naturalHeight;
+  bboxC.width=w; bboxC.height=h;
+  var rect=vpImg.getBoundingClientRect();
+  bboxC.style.width=rect.width+"px"; bboxC.style.height=rect.height+"px";
+  var ctx=bboxC.getContext("2d");
+  ctx.clearRect(0,0,w,h);
+  var m=.12,x=w*m,y=h*.2,bw=w*(1-2*m),bh=h*.6;
+  ctx.strokeStyle="rgba(201,168,76,.7)"; ctx.lineWidth=1.5; ctx.setLineDash([8,4]);
+  ctx.strokeRect(x,y,bw,bh);
+  var cs=14; ctx.setLineDash([]); ctx.lineWidth=2;
+  [[x,y],[x+bw,y],[x,y+bh],[x+bw,y+bh]].forEach(function(p,i){
+    var sx=i%2===0?cs:-cs, sy=i<2?cs:-cs;
+    ctx.beginPath(); ctx.moveTo(p[0]+sx,p[1]); ctx.lineTo(p[0],p[1]); ctx.lineTo(p[0],p[1]+sy); ctx.stroke();
+  });
+}
+
+resetResults();
+</script>
+</body>
+</html>
